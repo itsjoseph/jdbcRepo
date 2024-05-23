@@ -49,7 +49,7 @@ public class ProductoRepositorioImp implements Repository {
     public void guardar(Productos o) {
         String Ssql;
         if (o.getId() != null && o.getId() > 0) {
-            Ssql = "UPDATE productos SET nombre = ?, precio = ?  WHERE id = ?";
+            Ssql = "UPDATE productos SET nombre = ?, precio = ?  WHERE idproductos = ?";
         } else {
             Ssql = "INSERT INTO productos (nombre, precio, fecha) values (?,?,?)";
         }
@@ -71,7 +71,7 @@ public class ProductoRepositorioImp implements Repository {
 
     @Override
     public void eliminar(long id) {
-        try (PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM productos WHERE id = ?")) {
+        try (PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM productos WHERE idproductos = ?")) {
             stmt.setLong(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
