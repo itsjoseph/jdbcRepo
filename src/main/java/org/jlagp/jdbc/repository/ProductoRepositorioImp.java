@@ -3,10 +3,7 @@ package org.jlagp.jdbc.repository;
 import org.jlagp.jdbc.models.Productos;
 import org.jlagp.jdbc.util.ConexionJava;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +21,7 @@ public class ProductoRepositorioImp implements Repository {
             ResultSet rs = statement.executeQuery("SELECT * FROM productos");
 
             while (rs.next()) {
-                Productos p = new Productos();
-                p.setId(rs.getLong(1));
-                p.setNombre(rs.getString(2));
-                p.setPrecio(rs.getInt(3));
-                p.setFechaRegistro(rs.getDate(4));
+                Productos p = crearProducto(rs);
                 listado.add(p);
             }
         } catch (SQLException e) {
@@ -38,8 +31,18 @@ public class ProductoRepositorioImp implements Repository {
     }
 
     @Override
-    public Object porId(Long id) {
-        return null;
+    public Object porId(Long id) throws SQLException {
+        Productos producto = null;
+
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM productos WHERE idproductos= ?")) {
+            preparedStatement.setLong(1, id);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                producto = crearProducto(rs);
+            }
+        }
+        return producto;
     }
 
     @Override
@@ -55,5 +58,14 @@ public class ProductoRepositorioImp implements Repository {
     @Override
     public void eliminar(long id) {
 
+    }
+
+    private static Productos crearProducto(ResultSet rs) throws SQLException {
+        Productos p = new Productos();
+        p.setId(rs.getLong(1));
+        p.setNombre(rs.getString(2));
+        p.setPrecio(rs.getInt(3));
+        p.setFechaRegistro(rs.getDate(4));
+        return p;
     }
 }

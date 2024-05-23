@@ -14,8 +14,10 @@ public class Main {
         try (Connection con = ConexionJava.getInstance();
         ) {
             Repository<Productos> repositorio = new ProductoRepositorioImp();
-            repositorio.listar().forEach(p -> System.out.println(p.getNombre()));
+            repositorio.listar().forEach(System.out::println);
 
+
+            System.out.println(repositorio.porId(2L));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
