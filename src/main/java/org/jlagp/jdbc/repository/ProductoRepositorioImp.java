@@ -70,13 +70,13 @@ public class ProductoRepositorioImp implements Repository {
     }
 
     @Override
-    public void modificar(Object o) {
-        guardar(o);
-    }
-
-    @Override
     public void eliminar(long id) {
-
+        try (PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM productos WHERE id = ?")) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static Productos crearProducto(ResultSet rs) throws SQLException {

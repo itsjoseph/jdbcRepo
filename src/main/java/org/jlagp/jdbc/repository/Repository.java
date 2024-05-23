@@ -12,7 +12,5 @@ public interface Repository<T> {
 
     void guardar(Productos t);
 
-    void modificar(T t);
-
     void eliminar(long id);
 }
