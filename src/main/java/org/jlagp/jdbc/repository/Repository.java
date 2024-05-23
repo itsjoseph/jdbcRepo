@@ -1,5 +1,7 @@
 package org.jlagp.jdbc.repository;
 
+import org.jlagp.jdbc.models.Productos;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -8,7 +10,7 @@ public interface Repository<T> {
 
     T porId(Long id) throws SQLException;
 
-    void guardar(T t);
+    void guardar(Productos t);
 
     void modificar(T t);
 

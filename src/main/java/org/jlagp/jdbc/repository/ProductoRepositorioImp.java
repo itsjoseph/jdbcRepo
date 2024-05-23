@@ -36,23 +36,42 @@ public class ProductoRepositorioImp implements Repository {
 
         try (PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM productos WHERE idproductos= ?")) {
             preparedStatement.setLong(1, id);
-            ResultSet rs = preparedStatement.executeQuery();
-
-            while (rs.next()) {
-                producto = crearProducto(rs);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    producto = crearProducto(rs);
+                }
             }
         }
         return producto;
     }
 
     @Override
-    public void guardar(Object o) {
+    public void guardar(Productos o) {
+        String Ssql;
+        if (o.getId() != null && o.getId() > 0) {
+            Ssql = "UPDATE productos SET nombre = ?, precio = ?  WHERE id = ?";
+        } else {
+            Ssql = "INSERT INTO productos (nombre, precio, fecha) values (?,?,?)";
+        }
 
+        try (PreparedStatement stmt = getConnection().prepareStatement(Ssql)) {
+            stmt.setString(1, o.getNombre());
+            stmt.setInt(2, o.getPrecio());
+            if (o.getId() != null && o.getId() > 0) {
+                stmt.setLong(3, o.getId());
+            } else {
+                stmt.setDate(3, new Date(o.getFechaRegistro().getTime()));
+            }
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void modificar(Object o) {
-
+        guardar(o);
     }
 
     @Override
