@@ -1,5 +1,6 @@
 package org.jlagp.jdbc;
 
+import org.jlagp.jdbc.models.Categorias;
 import org.jlagp.jdbc.models.Productos;
 import org.jlagp.jdbc.repository.ProductoRepositorioImp;
 import org.jlagp.jdbc.repository.Repository;
@@ -24,10 +25,14 @@ public class Main {
 
             System.out.println("============= Insertar nuevo =============");
             Productos productos = new Productos();
-            productos.setId(3L);
-            productos.setNombre("Calcetines");
-            productos.setPrecio(550);
+            productos.setId(8L);
+            productos.setNombre("Teclado mecanico Corsair");
+            productos.setPrecio(350);
             productos.setFechaRegistro(new Date());
+            /*Categorias categorias = new Categorias();
+            categorias.setId(3L);
+            productos.setCategoria(categorias);
+            */
             repositorio.guardar(productos);
             System.out.println("Producto modificado con exito");
             System.out.println("Listado");

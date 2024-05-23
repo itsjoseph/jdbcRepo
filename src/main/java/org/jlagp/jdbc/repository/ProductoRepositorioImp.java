@@ -1,5 +1,6 @@
 package org.jlagp.jdbc.repository;
 
+import org.jlagp.jdbc.models.Categorias;
 import org.jlagp.jdbc.models.Productos;
 import org.jlagp.jdbc.util.ConexionJava;
 
@@ -18,7 +19,8 @@ public class ProductoRepositorioImp implements Repository {
         List<Productos> listado = new ArrayList<>();
 
         try (Statement statement = getConnection().createStatement()) {
-            ResultSet rs = statement.executeQuery("SELECT * FROM productos");
+            ResultSet rs = statement.executeQuery("SELECT p.*, c.nombre as nombre_categoria FROM productos AS p " +
+                    "INNER JOIN categorias AS c ON (p.categoria_id = c.id)");
 
             while (rs.next()) {
                 Productos p = crearProducto(rs);
@@ -34,7 +36,8 @@ public class ProductoRepositorioImp implements Repository {
     public Object porId(Long id) throws SQLException {
         Productos producto = null;
 
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM productos WHERE idproductos= ?")) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT p.*, c.nombre as nombre_categoria FROM productos AS p " +
+                "INNER JOIN categorias AS c ON (p.categoria_id = c.id) WHERE idproductos= ?")) {
             preparedStatement.setLong(1, id);
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
@@ -49,18 +52,19 @@ public class ProductoRepositorioImp implements Repository {
     public void guardar(Productos o) {
         String Ssql;
         if (o.getId() != null && o.getId() > 0) {
-            Ssql = "UPDATE productos SET nombre = ?, precio = ?  WHERE idproductos = ?";
+            Ssql = "UPDATE productos SET nombre = ?, precio = ?, categoria_id = ?  WHERE idproductos = ?";
         } else {
-            Ssql = "INSERT INTO productos (nombre, precio, fecha) values (?,?,?)";
+            Ssql = "INSERT INTO productos (nombre, precio, categoria_id, fecha) values (?,?,?,?)";
         }
 
         try (PreparedStatement stmt = getConnection().prepareStatement(Ssql)) {
             stmt.setString(1, o.getNombre());
             stmt.setInt(2, o.getPrecio());
+            stmt.setLong(3, o.getCategoria().getId());
             if (o.getId() != null && o.getId() > 0) {
-                stmt.setLong(3, o.getId());
+                stmt.setLong(4, o.getId());
             } else {
-                stmt.setDate(3, new Date(o.getFechaRegistro().getTime()));
+                stmt.setDate(4, new Date(o.getFechaRegistro().getTime()));
             }
 
             stmt.executeUpdate();
@@ -85,6 +89,9 @@ public class ProductoRepositorioImp implements Repository {
         p.setNombre(rs.getString(2));
         p.setPrecio(rs.getInt(3));
         p.setFechaRegistro(rs.getDate(4));
+        Categorias categorias = new Categorias();
+        categorias.setId(rs.getLong(1));
+        categorias.setNombre(rs.getString(2));
         return p;
     }
 }
